@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+    <!-- Scans the classpath of this application for @Components to deploy as beans -->
+    <context:component-scan base-package="com.your.org.name"/>
+
+    <!-- Configures the @Controller programming model -->
+    <mvc:annotation-driven/>
+
+    <!-- Configures Handler Interceptors -->
+    <mvc:interceptors>
+        <!-- Changes the locale when a 'locale' request parameter is sent; e.g. /?locale=de -->
+        <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"/>
+    </mvc:interceptors>
+
+    <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources/ directory -->
+    <mvc:resources mapping="/resources/**" location="/resources/"/>
+    <mvc:resources mapping="/favicon.ico" location="/resources/favicon.ico"/>
+
+    <!-- Resolves view names to protected .jsp resources within the /WEB-INF/views directory -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="viewClass" value="com.your.org.name.frontend.XssEscapingView"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <bean class="com.your.org.name.frontend.NavbarModel">
+        <property name="navbarLinks">
+            <list>
+                <bean class="com.your.org.name.frontend.NavbarLinkModel">
+                    <property name="name" value="home"/>
+                    <property name="path" value="/home"/>
+                </bean>
+                <bean class="com.your.org.name.frontend.NavbarLinkModel">
+                    <property name="name" value="about"/>
+                    <property name="path" value="/about"/>
+                </bean>
+                <bean class="com.your.org.name.frontend.NavbarLinkModel">
+                    <property name="name" value="contact"/>
+                    <property name="path" value="/contact"/>
+                </bean>
+            </list>
+        </property>
+        <property name="brandName" value="Brand Name"/>
+    </bean>
+
+    <bean class="com.your.org.name.frontend.FooterModel">
+        <property name="companyName" value="Your Org Name Here"/>
+        <property name="year" value="2013"/>
+    </bean>
+
+    <jpa:repositories base-package="com.your.org.name.backend.repository"/>
+
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 100MB -->
+        <property name="maxUploadSize" value="100000000"/>
+    </bean>
+
+    <import resource="database-context.dev.xml"/>
+    <import resource="database-context.prod.xml"/>
+</beans>
